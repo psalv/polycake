@@ -28,10 +28,10 @@ def find_intersection_x(slope, b, cut_y)
 end
 
 def driver
-  writeTo = File.open('polycake_small.out', 'w')
+  writeTo = File.open('polycake.out', 'w')
 
   data = []
-  File.open('polycake_small.in', 'r').each_line {|line| data.push(line.split(' '))}
+  File.open('polycake.in', 'r').each_line {|line| data.push(line.split(' '))}
 
   # Read how many shapes there are
   data[0] = data[0][0].to_i
@@ -42,14 +42,15 @@ def driver
   # Loop to repeat for each shape
   while data[0] > 0 do
 
-    puts "\nNew shape:\n"
+    # puts "\nNew shape:\n"
 
-    puts data[cur_pos]
     data[0] = data[0] - 1
 
     # Number of vertices in current shape and the y-position of the cut
     vertices = data[cur_pos][0].to_i
     cut_y = data[cur_pos][1].to_f
+
+    # puts "\n--A Increasing cur_pos from: " + cur_pos.to_s
     cur_pos = cur_pos + 1
 
     # Perimeter values
@@ -63,17 +64,19 @@ def driver
 
     pos1 = data[cur_pos]          # The next vertex and also the first
     first_vertex = data[cur_pos]  # Storing the first vertex for the end
-    cur_pos = cur_pos + 1
 
-    puts vertices
+    # puts "\n--B Increasing cur_pos from: " + cur_pos.to_s
+    cur_pos = cur_pos + 1
 
     # A flag to indicate whether or not we are still within the same shape
     first_shape = true
 
+    inc_flag = false
 
     # We need to explore every vertex
     while vertices > 0 do
       set_first_shape = false
+
       vertices = vertices - 1
 
       # Set the current vertex to be the previous one
@@ -82,14 +85,20 @@ def driver
       # In this case we want to use the very first vertex
       if vertices == 0
         pos1 = first_vertex
+        # puts "\n--G The last vertex"
       else                       # Otherwise we read in the next vertex
         pos1 = data[cur_pos]
+
+        # puts "\n--C Increasing cur_pos from: " + cur_pos.to_s
         cur_pos = cur_pos + 1
       end
 
       # If we cross the intersection line
       if (pos1[1].to_f < cut_y and pos2[1].to_f > cut_y) or (pos1[1].to_f > cut_y and pos2[1].to_f < cut_y)
 
+        if vertices == 0
+          inc_flag = true
+        end
 
         # Find the slope of the line and the b value
         slope = slope_of_line(pos1, pos2)
@@ -105,6 +114,8 @@ def driver
         end
 
         vertices = vertices + 1
+
+        # puts "\n--F Decreasing cur_pos from: " + cur_pos.to_s
         cur_pos = cur_pos - 1
         set_first_shape = true
       end
@@ -124,18 +135,23 @@ def driver
     perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
     perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
 
-    puts "\n\nCuts and final:"
-    puts x1_cut
-    puts x2_cut
-    puts perm_1 + ' ' + perm_2 + "\n"
+    # puts "\n\nCuts and final:"
+    # puts x1_cut
+    # puts x2_cut
+    # puts perm_1 + ' ' + perm_2 + "\n"
 
     if perm_1 < perm_2
-      writeTo.puts(perm_1 + ' ' + perm_2 + "\n")
+      writeTo.puts(perm_1 + ' ' + perm_2)
     else
-      writeTo.puts(perm_2 + ' ' + perm_1 + "\n")
+      writeTo.puts(perm_2 + ' ' + perm_1)
     end
 
-    cur_pos = cur_pos + 1
+
+    # puts "\n--D Increasing cur_pos from: " + cur_pos.to_s
+    # puts inc_flag
+    if inc_flag
+      cur_pos = cur_pos + 1
+    end
 
   end
 
