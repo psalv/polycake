@@ -1,20 +1,21 @@
 
 
 def euclidean_distance(pos1, pos2)
-  (((pos1[1].to_i - pos2[1].to_i) ** 2) + ((pos1[0].to_i - pos2[0].to_i) ** 2)) ** 0.5
+  (((pos1[1].to_f - pos2[1].to_f) ** 2) + ((pos1[0].to_f - pos2[0].to_f) ** 2)) ** 0.5
 end
 
 
-def slope_of_line(pos1, pos2)
-  if (pos1[0].to_i - pos2[0].to_i) == 0
+# pos2 = (y1, x1), pos1 = (y2, x2) since we are travelling to pos1
+def slope_of_line(pos2, pos1)
+  if (pos1[0].to_f - pos2[0].to_f) == 0
     return 0
   end
-  (pos1[1].to_i - pos2[1].to_i).abs / (pos1[0].to_i - pos2[0].to_i).abs
+  (pos1[1].to_f - pos2[1].to_f) / (pos1[0].to_f - pos2[0].to_f)
 end
 
 
 def find_b(slope, pos)
-  pos[1].to_i - pos[0].to_i * slope
+  pos[1].to_f - pos[0].to_f * slope
 end
 
 
@@ -40,12 +41,15 @@ def driver
 
   # Loop to repeat for each shape
   while data[0] > 0 do
+
+    puts "\nNew shape:\n"
+
+    puts data[cur_pos]
     data[0] = data[0] - 1
 
     # Number of vertices in current shape and the y-position of the cut
     vertices = data[cur_pos][0].to_i
-    cut_y = data[cur_pos][1].to_i
-
+    cut_y = data[cur_pos][1].to_f
     cur_pos = cur_pos + 1
 
     # Perimeter values
@@ -53,13 +57,15 @@ def driver
     perm_2 = 0
 
     # The x-positions of the cut, to eb determined when we discover intersecting lines
-    x1_cut = 0
-    x2_cut = 0
+    x1_cut = 0.0
+    x2_cut = 0.0
 
 
     pos1 = data[cur_pos]          # The next vertex and also the first
     first_vertex = data[cur_pos]  # Storing the first vertex for the end
     cur_pos = cur_pos + 1
+
+    puts vertices
 
     # A flag to indicate whether or not we are still within the same shape
     first_shape = true
@@ -67,6 +73,7 @@ def driver
 
     # We need to explore every vertex
     while vertices > 0 do
+      set_first_shape = false
       vertices = vertices - 1
 
       # Set the current vertex to be the previous one
@@ -81,7 +88,8 @@ def driver
       end
 
       # If we cross the intersection line
-      if (pos1[1].to_i < cut_y and pos2[1].to_i > cut_y) or (pos1[1].to_i > cut_y and pos2[1].to_i < cut_y)
+      if (pos1[1].to_f < cut_y and pos2[1].to_f > cut_y) or (pos1[1].to_f > cut_y and pos2[1].to_f < cut_y)
+
 
         # Find the slope of the line and the b value
         slope = slope_of_line(pos1, pos2)
@@ -91,16 +99,14 @@ def driver
         if first_shape
           x1_cut = find_intersection_x(slope, b, cut_y)
           pos1 = [x1_cut, cut_y]
-          vertices = vertices + 1
-          cur_pos = cur_pos - 1
         else
           x2_cut = find_intersection_x(slope, b, cut_y)
           pos1 = [x2_cut, cut_y]
-          vertices = vertices + 1
-          cur_pos = cur_pos - 1
         end
 
-        first_shape = !first_shape
+        vertices = vertices + 1
+        cur_pos = cur_pos - 1
+        set_first_shape = true
       end
 
       if first_shape
@@ -109,20 +115,28 @@ def driver
         perm_2 = perm_2 + euclidean_distance(pos1, pos2)
       end
 
+      if set_first_shape
+        first_shape = !first_shape
+      end
+
     end
 
     perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
     perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
 
+    puts "\n\nCuts and final:"
+    puts x1_cut
+    puts x2_cut
     puts perm_1 + ' ' + perm_2 + "\n"
 
-    writeTo.puts(perm_1 + ' ' + perm_2 + "\n")
+    if perm_1 < perm_2
+      writeTo.puts(perm_1 + ' ' + perm_2 + "\n")
+    else
+      writeTo.puts(perm_2 + ' ' + perm_1 + "\n")
+    end
+
     cur_pos = cur_pos + 1
 
-
-
-  # 12.000 12.000
-  # 25.690 35.302
   end
 
 end
