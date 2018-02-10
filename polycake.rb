@@ -42,15 +42,12 @@ def driver
   # Loop to repeat for each shape
   while data[0] > 0 do
 
-    # puts "\nNew shape:\n"
-
     data[0] = data[0] - 1
 
     # Number of vertices in current shape and the y-position of the cut
     vertices = data[cur_pos][0].to_i
     cut_y = data[cur_pos][1].to_f
 
-    # puts "\n--A Increasing cur_pos from: " + cur_pos.to_s
     cur_pos = cur_pos + 1
 
     # Perimeter values
@@ -65,7 +62,6 @@ def driver
     pos1 = data[cur_pos]          # The next vertex and also the first
     first_vertex = data[cur_pos]  # Storing the first vertex for the end
 
-    # puts "\n--B Increasing cur_pos from: " + cur_pos.to_s
     cur_pos = cur_pos + 1
 
     # A flag to indicate whether or not we are still within the same shape
@@ -85,11 +81,9 @@ def driver
       # In this case we want to use the very first vertex
       if vertices == 0
         pos1 = first_vertex
-        # puts "\n--G The last vertex"
       else                       # Otherwise we read in the next vertex
         pos1 = data[cur_pos]
 
-        # puts "\n--C Increasing cur_pos from: " + cur_pos.to_s
         cur_pos = cur_pos + 1
       end
 
@@ -113,42 +107,37 @@ def driver
           pos1 = [x2_cut, cut_y]
         end
 
+        # Resetting position variables and flag for perimeter change
         vertices = vertices + 1
-
-        # puts "\n--F Decreasing cur_pos from: " + cur_pos.to_s
         cur_pos = cur_pos - 1
         set_first_shape = true
       end
 
+      # Checking which perimeter to add to
       if first_shape
         perm_1 = perm_1 + euclidean_distance(pos1, pos2)
       else
         perm_2 = perm_2 + euclidean_distance(pos1, pos2)
       end
 
+      # Possibly changing the current perimeter
       if set_first_shape
         first_shape = !first_shape
       end
 
     end
 
-    perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
-    perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
-
-    # puts "\n\nCuts and final:"
-    # puts x1_cut
-    # puts x2_cut
-    # puts perm_1 + ' ' + perm_2 + "\n"
-
+    # Putting in the correct order
     if perm_1 < perm_2
+      perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
+      perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
       writeTo.puts(perm_1 + ' ' + perm_2)
     else
+      perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
+      perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
       writeTo.puts(perm_2 + ' ' + perm_1)
     end
 
-
-    # puts "\n--D Increasing cur_pos from: " + cur_pos.to_s
-    # puts inc_flag
     if inc_flag
       cur_pos = cur_pos + 1
     end
