@@ -131,11 +131,15 @@ def driver
     if perm_1 < perm_2
       perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
       perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
-      writeTo.puts(perm_1 + ' ' + perm_2)
+      writeTo.print(perm_1 + ' ' + perm_2)
     else
       perm_1 = '%0.3f' % (perm_1 + (x1_cut - x2_cut).abs)
       perm_2 = '%0.3f' % (perm_2 + (x1_cut - x2_cut).abs)
-      writeTo.puts(perm_2 + ' ' + perm_1)
+      writeTo.print(perm_2 + ' ' + perm_1)
+    end
+
+    if data[0] != 0
+      writeTo.print("\n")
     end
 
     if inc_flag
