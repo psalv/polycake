@@ -13,12 +13,12 @@ def slope_of_line(pos2, pos1)
   (pos1[1].to_f - pos2[1].to_f) / (pos1[0].to_f - pos2[0].to_f)
 end
 
-
+# Find the b value for the line connecting to the two points
 def find_b(slope, pos)
   pos[1].to_f - pos[0].to_f * slope
 end
 
-
+# Find the x intersection of the horizontal line and the line connecting the two points
 def find_intersection_x(slope, b, cut_y)
   return_value = b
   if slope != 0
